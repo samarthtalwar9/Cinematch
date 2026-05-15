@@ -20,6 +20,13 @@ def main():
     # Reset index to ensure positional mapping matches the similarity matrix rows
     movies = movies.reset_index(drop=True)
 
+    # --- Deployment Optimization for Free-Tier Hosting ---
+    # Memory Efficiency: Generating a 5000x5000 matrix takes ~200MB of RAM, which often crashes 
+    # free-tier cloud platforms like Render. We limit the dataset to the top 2000 movies to 
+    # generate a significantly smaller similarity matrix (~30MB) that comfortably fits in memory.
+    print("Optimizing dataset for cloud deployment...")
+    movies = movies.head(2000)
+
     # 2. Analyze dataset structure and identify available columns
     available_columns = movies.columns.tolist()
     print(f"Columns detected in dataset: {available_columns}")
