@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CineMatch — Discover Stories Worth Watching</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --charcoal:   #18171a;
+      --charcoal-2: #201f22;
+      --charcoal-3: #2a2830;
+      --beige:      #c8b89a;
+      --beige-light:#e4d9c8;
+      --copper:     #b8845a;
+      --copper-light:#d4a574;
+      --green:      #2d4a3a;
+      --green-light:#3d6050;
+      --offwhite:   #f0ebe2;
+      --muted:      #7a7570;
+      --border:     rgba(200,184,154,0.12);
+      --border-hover:rgba(184,132,90,0.35);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--charcoal);
+      color: var(--offwhite);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--charcoal); }
+    ::-webkit-scrollbar-thumb { background: var(--copper); border-radius: 3px; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 60px;
+      background: linear-gradient(to bottom, rgba(24,23,26,0.95) 0%, transparent 100%);
+      backdrop-filter: blur(2px);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 500; letter-spacing: 0.04em;
+      color: var(--offwhite);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--copper); font-style: italic; }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      color: var(--beige); font-size: 0.78rem; letter-spacing: 0.12em;
+      text-transform: uppercase; text-decoration: none; font-weight: 400;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--copper-light); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      padding: 120px 40px 80px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 30% 40%, rgba(45,74,58,0.28) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 75% 65%, rgba(184,132,90,0.14) 0%, transparent 65%),
+        radial-gradient(ellipse 100% 80% at 50% 100%, rgba(32,31,34,0.9) 0%, transparent 80%),
+        var(--charcoal);
+    }
+    /* Floating abstract shapes */
+    .shape {
+      position: absolute; z-index: 0; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+    }
+    .shape-1 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(45,74,58,0.22) 0%, transparent 70%);
+      top: -80px; left: -100px;
+      animation: driftA 18s ease-in-out infinite alternate;
+    }
+    .shape-2 {
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(184,132,90,0.16) 0%, transparent 70%);
+      bottom: 60px; right: -60px;
+      animation: driftB 22s ease-in-out infinite alternate;
+    }
+    .shape-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(200,184,154,0.10) 0%, transparent 70%);
+      top: 40%; left: 60%;
+      animation: driftC 14s ease-in-out infinite alternate;
+    }
+    @keyframes driftA { to { transform: translate(40px, 60px) scale(1.1); } }
+    @keyframes driftB { to { transform: translate(-30px, -50px) scale(0.9); } }
+    @keyframes driftC { to { transform: translate(20px, 40px) scale(1.15); } }
+
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 780px; }
+    .hero-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--copper); font-weight: 500; margin-bottom: 28px;
+      display: inline-flex; align-items: center; gap: 12px;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; display: block; width: 32px; height: 1px; background: var(--copper);
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 7vw, 5.8rem);
+      font-weight: 300; line-height: 1.1; letter-spacing: -0.01em;
+      color: var(--offwhite); margin-bottom: 20px;
+      opacity: 0; animation: fadeUp 0.9s 0.35s forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--beige-light); }
+    .hero-subtitle {
+      font-size: 1rem; color: var(--muted); font-weight: 300;
+      letter-spacing: 0.04em; margin-bottom: 52px; max-width: 500px; margin-inline: auto;
+      opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+    }
+    /* Search Bar */
+    .search-wrap {
+      position: relative; width: 100%; max-width: 580px; margin-inline: auto;
+      opacity: 0; animation: fadeUp 0.9s 0.65s forwards;
+    }
+    .search-bar {
+      display: flex; align-items: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 60px; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(12px);
+    }
+    .search-bar:focus-within {
+      border-color: rgba(184,132,90,0.45);
+      box-shadow: 0 0 0 3px rgba(184,132,90,0.08), 0 8px 40px rgba(0,0,0,0.3);
+    }
+    .search-icon {
+      padding: 0 18px 0 26px; color: var(--muted); flex-shrink: 0;
+    }
+    .search-input {
+      flex: 1; background: none; border: none; outline: none;
+      padding: 18px 8px; font-family: 'Jost', sans-serif;
+      font-size: 0.95rem; font-weight: 300; color: var(--offwhite);
+      letter-spacing: 0.03em;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-btn {
+      margin: 6px; padding: 12px 30px;
+      background: linear-gradient(135deg, var(--copper) 0%, #a06840 100%);
+      border: none; border-radius: 50px; cursor: pointer;
+      font-family: 'Jost', sans-serif; font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--offwhite);
+      transition: all 0.25s;
+    }
+    .search-btn:hover {
+      background: linear-gradient(135deg, var(--copper-light) 0%, var(--copper) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(184,132,90,0.3);
+    }
+    .search-btn:active { transform: translateY(0); }
+    .hero-hint {
+      margin-top: 20px; font-size: 0.75rem; color: var(--muted);
+      letter-spacing: 0.06em;
+      opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+    }
+    .hero-hint span { color: var(--beige); cursor: pointer; transition: color 0.2s; }
+    .hero-hint span:hover { color: var(--copper-light); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      width: 100%; height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 0;
+    }
+
+    /* ─── SECTION BASE ─── */
+    section { padding: 96px 60px; }
+    .section-label {
+      font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--copper); font-weight: 500; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::after {
+      content: ''; flex: 0 0 40px; height: 1px; background: var(--copper);
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300; letter-spacing: -0.01em; line-height: 1.2;
+      margin-bottom: 48px;
+    }
+    .section-title em { font-style: italic; color: var(--beige); }
+
+    /* ─── STATES ─── */
+    #results-section { padding-top: 20px; }
+    .state-box {
+      text-align: center; padding: 80px 40px;
+      border: 1px solid var(--border); border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+    }
+    .state-icon { font-size: 2.5rem; margin-bottom: 16px; opacity: 0.5; }
+    .state-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 300; margin-bottom: 8px;
+    }
+    .state-sub { font-size: 0.85rem; color: var(--muted); }
+
+    /* Loading */
+    .loading-wrap { text-align: center; padding: 60px; }
+    .loading-reel {
+      width: 48px; height: 48px; margin: 0 auto 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--copper);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ─── MOVIE CARDS GRID ─── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 28px;
+    }
+    .movie-card {
+      background: var(--charcoal-2);
+      border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(.25,.8,.25,1),
+                  box-shadow 0.35s, border-color 0.3s;
+      animation: cardIn 0.5s both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .movie-card:nth-child(1) { animation-delay: 0s; }
+    .movie-card:nth-child(2) { animation-delay: 0.07s; }
+    .movie-card:nth-child(3) { animation-delay: 0.14s; }
+    .movie-card:nth-child(4) { animation-delay: 0.21s; }
+    .movie-card:nth-child(5) { animation-delay: 0.28s; }
+    .movie-card:nth-child(6) { animation-delay: 0.35s; }
+    .movie-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(184,132,90,0.2);
+      border-color: var(--border-hover);
+    }
+    .card-poster {
+      position: relative; aspect-ratio: 2/3; overflow: hidden;
+    }
+    .card-poster img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+    .movie-card:hover .card-poster img { transform: scale(1.04); }
+    .card-poster-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--charcoal-3) 0%, var(--green) 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; color: var(--muted);
+    }
+    .card-poster-placeholder .poster-icon { font-size: 2.5rem; opacity: 0.4; }
+    .poster-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(24,23,26,0.95) 0%, rgba(24,23,26,0.2) 50%, transparent 100%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .movie-card:hover .poster-overlay { opacity: 1; }
+    .card-rating-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(24,23,26,0.85); backdrop-filter: blur(6px);
+      border: 1px solid rgba(184,132,90,0.3);
+      border-radius: 20px; padding: 4px 10px;
+      font-size: 0.74rem; font-weight: 500; color: var(--copper-light);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .card-body { padding: 18px 20px 22px; }
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; font-weight: 500; line-height: 1.3;
+      margin-bottom: 4px; color: var(--offwhite);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-year { font-size: 0.77rem; color: var(--muted); margin-bottom: 12px; }
+    .card-genres { display: flex; flex-wrap: wrap; gap: 6px; }
+    .genre-tag {
+      font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; font-weight: 500;
+      background: rgba(45,74,58,0.4); border: 1px solid rgba(61,96,80,0.4);
+      color: #8bb8a0;
+    }
+
+    /* ─── CURATED CAROUSEL ─── */
+    #curated {
+      background: var(--charcoal-2);
+      padding: 80px 0 80px 60px;
+    }
+    .curated-header {
+      padding-right: 60px; margin-bottom: 40px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+    }
+    .carousel-nav { display: flex; gap: 10px; }
+    .carousel-btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03); color: var(--beige);
+      cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.25s;
+    }
+    .carousel-btn:hover {
+      border-color: var(--copper); color: var(--copper-light);
+      background: rgba(184,132,90,0.08);
+    }
+    .carousel-track-wrap { overflow: hidden; }
+    .carousel-track {
+      display: flex; gap: 24px;
+      transition: transform 0.55s cubic-bezier(.25,.8,.25,1);
+    }
+    .carousel-card {
+      flex: 0 0 280px; border-radius: 12px; overflow: hidden;
+      position: relative; cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .carousel-card:hover { transform: translateY(-4px); }
+    .carousel-img {
+      width: 100%; height: 380px; object-fit: cover;
+      display: block;
+      background: linear-gradient(135deg, var(--charcoal-3), var(--green));
+    }
+    .carousel-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(24,23,26,0.96) 0%, rgba(24,23,26,0.2) 55%, transparent 100%);
+    }
+    .carousel-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 24px 22px;
+    }
+    .carousel-genre {
+      font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--copper-light); font-weight: 500; margin-bottom: 6px;
+    }
+    .carousel-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 500; line-height: 1.25;
+      color: var(--offwhite); margin-bottom: 8px;
+    }
+    .carousel-rating {
+      font-size: 0.78rem; color: var(--beige);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .stars { color: var(--copper); }
+
+    /* ─── FEATURES ─── */
+    #features { background: var(--charcoal); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      padding: 36px 32px;
+      background: var(--charcoal-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .feature-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px; margin-bottom: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .feature-icon.green  { background: rgba(45,74,58,0.5); border: 1px solid rgba(61,96,80,0.4); }
+    .feature-icon.copper { background: rgba(184,132,90,0.15); border: 1px solid rgba(184,132,90,0.25); }
+    .feature-icon.beige  { background: rgba(200,184,154,0.1); border: 1px solid rgba(200,184,154,0.2); }
+    .feature-icon.dark   { background: rgba(255,255,255,0.04); border: 1px solid var(--border); }
+    .feature-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 500; margin-bottom: 10px;
+    }
+    .feature-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+    /* ─── ABOUT ─── */
+    #about {
+      background: linear-gradient(135deg, var(--charcoal-2) 0%, rgba(45,74,58,0.15) 100%);
+      padding: 96px 60px;
+    }
+    .about-inner {
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px; align-items: center;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-frame {
+      width: 100%; aspect-ratio: 3/4;
+      border-radius: 16px; overflow: hidden;
+      background: linear-gradient(160deg, var(--charcoal-3) 0%, var(--green) 60%, rgba(184,132,90,0.3) 100%);
+      position: relative;
+    }
+    .about-frame-inner {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      opacity: 0.35;
+    }
+    .film-strip {
+      display: flex; gap: 4px;
+    }
+    .film-frame {
+      width: 40px; height: 52px; border-radius: 3px;
+      border: 1px solid var(--beige); opacity: 0.4;
+    }
+    .about-stat-card {
+      position: absolute; bottom: -20px; right: -20px;
+      background: var(--charcoal-2); border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      border-radius: 14px; padding: 20px 24px;
+    }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 300; color: var(--copper-light);
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.06em; }
+    .about-text .section-title { margin-bottom: 24px; }
+    .about-body {
+      font-size: 0.92rem; color: rgba(240,235,226,0.7); line-height: 1.85;
+      margin-bottom: 16px;
+    }
+    .about-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .about-tag {
+      padding: 8px 18px; border-radius: 30px;
+      border: 1px solid var(--border);
+      font-size: 0.75rem; letter-spacing: 0.08em; color: var(--beige);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: rgba(14,13,16,0.98);
+      padding: 60px;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 32px;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 300;
+      color: var(--offwhite);
+    }
+    .footer-logo span { color: var(--copper); font-style: italic; }
+    .footer-tagline { font-size: 0.78rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.06em; }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-link {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 30px;
+      border: 1px solid var(--border); text-decoration: none;
+      font-size: 0.78rem; letter-spacing: 0.08em;
+      color: var(--beige); transition: all 0.25s;
+    }
+    .footer-link:hover {
+      border-color: var(--copper); color: var(--copper-light);
+      background: rgba(184,132,90,0.06);
+    }
+    .footer-copy { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; }
+
+    /* ─── INTERSECTION OBSERVER FADE ─── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 18px 28px; }
+      .nav-links { display: none; }
+      section { padding: 72px 28px; }
+      #curated { padding: 72px 0 72px 28px; }
+      .curated-header { padding-right: 28px; }
+      .about-inner { grid-template-columns: 1fr; gap: 40px; }
+      .about-visual { display: none; }
+      footer { padding: 44px 28px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 600px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .carousel-card { flex: 0 0 220px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Cine<span>Match</span></a>
+    <ul class="nav-links">
+      <li><a href="#discover">Discover</a></li>
+      <li><a href="#curated">Curated</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Premium Discovery</div>
+      <h1 class="hero-title">
+        Discover Stories<br/><em>Worth Watching</em>
+      </h1>
+      <p class="hero-subtitle">A curated engine that finds films aligned with your taste — not your history.</p>
+      <div class="search-wrap">
+        <div class="search-bar">
+          <div class="search-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <input id="searchInput" class="search-input" type="text"
+            placeholder="A film, mood, director, or theme…" autocomplete="off"/>
+          <button class="search-btn" id="searchBtn" onclick="handleSearch()">Discover</button>
+        </div>
+        <p class="hero-hint">Try: <span onclick="quickSearch('slow cinema')">slow cinema</span> · <span onclick="quickSearch('Italian neorealism')">Italian neorealism</span> · <span onclick="quickSearch('Kubrick')">Kubrick</span> · <span onclick="quickSearch('coming of age drama')">coming of age drama</span></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- RESULTS -->
+  <section id="discover">
+    <div id="results-section">
+      <div id="state-initial" class="state-box">
+        <div class="state-icon">🎞</div>
+        <div class="state-title">Your discoveries await</div>
+        <p class="state-sub">Enter a title, theme, director, or genre above to find films made for you.</p>
+      </div>
+      <div id="state-loading" class="loading-wrap" style="display:none;">
+        <div class="loading-reel"></div>
+        <div class="loading-text">Curating your results…</div>
+      </div>
+      <div id="state-error" class="state-box" style="display:none;">
+        <div class="state-icon">⚠</div>
+        <div class="state-title">Something went wrong</div>
+        <p class="state-sub" id="error-msg">Unable to fetch results. Please try again.</p>
+      </div>
+      <div id="state-empty" class="state-box" style="display:none;">
+        <div class="state-icon">🔍</div>
+        <div class="state-title">No films found</div>
+        <p class="state-sub">Try a different search — a mood, genre, or director you love.</p>
+      </div>
+      <div id="results-header" style="display:none; margin-bottom:32px;">
+        <div class="section-label">Results</div>
+        <h2 class="section-title" id="results-title">Films for <em>"..."</em></h2>
+      </div>
+      <div id="cards-grid" class="cards-grid" style="display:none;"></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CURATED CAROUSEL -->
+  <section id="curated" style="overflow:visible;">
+    <div class="curated-header">
+      <div>
+        <div class="section-label">Curated Discoveries</div>
+        <h2 class="section-title" style="margin-bottom:0;">The <em>Editors' Selection</em></h2>
+      </div>
+      <div class="carousel-nav">
+        <button class="carousel-btn" id="carouselPrev" onclick="carouselMove(-1)">&#8592;</button>
+        <button class="carousel-btn" id="carouselNext" onclick="carouselMove(1)">&#8594;</button>
+      </div>
+    </div>
+    <div class="carousel-track-wrap">
+      <div class="carousel-track" id="carouselTrack"></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="reveal">
+      <div class="section-label">What We Offer</div>
+      <h2 class="section-title">Built for the <em>Discerning Viewer</em></h2>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon green">🎯</div>
+        <div class="feature-title">Personalized Taste</div>
+        <p class="feature-desc">Our engine learns your aesthetic sensibility — pacing, tone, visual style, and narrative complexity — not just genre clicks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon copper">🧭</div>
+        <div class="feature-title">Smart Discovery</div>
+        <p class="feature-desc">Surface hidden masterworks and overlooked gems across decades and continents that algorithm-driven platforms bury forever.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon beige">🎨</div>
+        <div class="feature-title">Genre Exploration</div>
+        <p class="feature-desc">Move beyond labels. Explore cinema through moods, movements, directors, and visual languages that defy simple categorization.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon dark">🔗</div>
+        <div class="feature-title">Similarity Matching</div>
+        <p class="feature-desc">Input any film you love and receive a curated list of cinematic siblings — films that share its DNA, not just its genre tag.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-inner">
+      <div class="about-visual reveal">
+        <div class="about-frame">
+          <div class="about-frame-inner">
+            <div class="film-strip">
+              <div class="film-frame"></div>
+              <div class="film-frame"></div>
+              <div class="film-frame"></div>
+              <div class="film-frame"></div>
+            </div>
+            <div style="font-size:3rem; opacity:0.3;">🎬</div>
+            <div class="film-strip">
+              <div class="film-frame"></div>
+              <div class="film-frame"></div>
+              <div class="film-frame"></div>
+              <div class="film-frame"></div>
+            </div>
+          </div>
+        </div>
+        <div class="about-stat-card">
+          <div class="stat-number">500K+</div>
+          <div class="stat-label">Films in our library</div>
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <div class="section-label">Our Philosophy</div>
+        <h2 class="section-title">Cinema as <em>Discovery</em></h2>
+        <p class="about-body">CineMatch was built on a simple belief: the best film you'll ever see is probably one you've never heard of. Our recommendation engine goes beyond popularity metrics to understand what makes a film resonate with a particular viewer.</p>
+        <p class="about-body">We analyse narrative structure, cinematographic language, thematic density, and directorial voice — not just genre and cast — to build a profile of your cinematic sensibility and match it against our curated library.</p>
+        <div class="about-tags">
+          <span class="about-tag">AI-Powered Matching</span>
+          <span class="about-tag">500K+ Films</span>
+          <span class="about-tag">World Cinema</span>
+          <span class="about-tag">Critic-Curated</span>
+          <span class="about-tag">No Ads</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">Cine<span>Match</span></div>
+        <div class="footer-tagline">The art of finding the right film.</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" class="footer-link">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
+          </svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com" target="_blank" class="footer-link">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+          LinkedIn
+        </a>
+      </div>
+      <div class="footer-copy">© 2025 CineMatch. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── DATA ── */
+    const curatedFilms = [
+      { title: "Mulholland Drive",     year: 2001, genre: "Neo-Noir / Mystery",       rating: "9.1", color: "#1a2a3a" },
+      { title: "In the Mood for Love", year: 2000, genre: "Romance / Drama",           rating: "8.7", color: "#2a1a1a" },
+      { title: "The Tree of Life",     year: 2011, genre: "Existential Drama",         rating: "8.4", color: "#1a2a1a" },
+      { title: "Parasite",             year: 2019, genre: "Thriller / Social Drama",   rating: "9.2", color: "#1a1a2a" },
+      { title: "Certified Copy",       year: 2010, genre: "Art House / Romance",       rating: "8.2", color: "#2a2a1a" },
+      { title: "Burning",              year: 2018, genre: "Mystery / Drama",           rating: "8.6", color: "#1a2a22" },
+      { title: "Portrait of a Lady",   year: 2019, genre: "Period Romance",            rating: "8.5", color: "#1e1a2a" },
+      { title: "A Separation",         year: 2011, genre: "Family Drama",              rating: "8.8", color: "#221a1a" },
+    ];
+
+    const mockResults = {
+      "slow cinema":        [
+        { title:"Stalker", year:1979,     rating:"9.0", genres:["Sci-Fi","Art House"],    poster:null },
+        { title:"Jeanne Dielman", year:1975, rating:"8.9", genres:["Drama","Feminist"],   poster:null },
+        { title:"Sátántangó", year:1994,  rating:"8.7", genres:["Drama","Epic"],          poster:null },
+        { title:"Beau Travail", year:1999, rating:"8.5", genres:["Drama","War"],          poster:null },
+        { title:"Certified Copy", year:2010, rating:"8.2", genres:["Romance","Art House"],poster:null },
+        { title:"Yi Yi", year:2000,       rating:"8.8", genres:["Family","Drama"],        poster:null },
+      ],
+      "kubrick":            [
+        { title:"2001: A Space Odyssey", year:1968, rating:"9.2", genres:["Sci-Fi","Art House"], poster:null },
+        { title:"Barry Lyndon",      year:1975, rating:"8.6", genres:["Period Drama","War"],      poster:null },
+        { title:"The Shining",       year:1980, rating:"8.8", genres:["Horror","Thriller"],       poster:null },
+        { title:"Full Metal Jacket", year:1987, rating:"8.4", genres:["War","Drama"],             poster:null },
+        { title:"Eyes Wide Shut",    year:1999, rating:"7.8", genres:["Mystery","Drama"],         poster:null },
+        { title:"A Clockwork Orange",year:1971, rating:"8.7", genres:["Crime","Sci-Fi"],          poster:null },
+      ],
+      "coming of age drama":[
+        { title:"Boyhood",           year:2014, rating:"7.9", genres:["Drama","Coming of Age"],   poster:null },
+        { title:"Moonlight",         year:2016, rating:"8.7", genres:["Drama","LGBTQ+"],          poster:null },
+        { title:"The 400 Blows",     year:1959, rating:"8.9", genres:["Drama","Classic"],         poster:null },
+        { title:"Stand by Me",       year:1986, rating:"8.1", genres:["Drama","Adventure"],       poster:null },
+        { title:"Eighth Grade",      year:2018, rating:"7.8", genres:["Comedy","Drama"],          poster:null },
+        { title:"Perks of Being a Wallflower", year:2012, rating:"8.0", genres:["Drama","Romance"], poster:null },
+      ],
+      "italian neorealism": [
+        { title:"Bicycle Thieves",   year:1948, rating:"9.1", genres:["Drama","Classic"],         poster:null },
+        { title:"Rome, Open City",   year:1945, rating:"8.6", genres:["War","Drama"],             poster:null },
+        { title:"Umberto D.",        year:1952, rating:"8.5", genres:["Drama","Social"],          poster:null },
+        { title:"La Strada",         year:1954, rating:"8.4", genres:["Drama","Art House"],       poster:null },
+        { title:"Germany Year Zero", year:1948, rating:"8.2", genres:["War","Drama"],             poster:null },
+        { title:"Paisà",             year:1946, rating:"8.1", genres:["War","Drama"],             poster:null },
+      ],
+    };
+
+    function getRandomResults() {
+      const keys = Object.keys(mockResults);
+      return mockResults[keys[Math.floor(Math.random()*keys.length)]];
+    }
+
+    /* ── CAROUSEL ── */
+    let carouselPos = 0;
+    const CARD_W = 304; // 280px + 24px gap
+
+    function buildCarousel() {
+      const track = document.getElementById('carouselTrack');
+      track.innerHTML = curatedFilms.map(f => `
+        <div class="carousel-card">
+          <div class="carousel-img" style="background:linear-gradient(160deg, #1a1814 0%, ${f.color} 60%, rgba(184,132,90,0.2) 100%); height:380px; display:flex; align-items:center; justify-content:center;">
+            <span style="font-size:3.5rem; opacity:0.18;">🎬</span>
+          </div>
+          <div class="carousel-overlay"></div>
+          <div class="carousel-info">
+            <div class="carousel-genre">${f.genre}</div>
+            <div class="carousel-title">${f.title}</div>
+            <div class="carousel-rating">
+              <span class="stars">★</span> ${f.rating} &nbsp;·&nbsp; ${f.year}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function carouselMove(dir) {
+      const track = document.getElementById('carouselTrack');
+      const wrap = track.parentElement;
+      const visible = Math.floor(wrap.offsetWidth / CARD_W);
+      const max = Math.max(0, curatedFilms.length - visible);
+      carouselPos = Math.max(0, Math.min(max, carouselPos + dir));
+      track.style.transform = `translateX(-${carouselPos * CARD_W}px)`;
+    }
+
+    /* ── SEARCH ── */
+    function quickSearch(query) {
+      document.getElementById('searchInput').value = query;
+      handleSearch();
+    }
+
+    // CONFIGURATION: Set this to your deployed backend URL (e.g., "https://cinematch-backend.onrender.com/recommend")
+    // Use "http://localhost:5000/recommend" for local development.
+    const API_URL = "http://localhost:5000/recommend";
+
+    function handleSearch() {
+      const raw = document.getElementById('searchInput').value.trim();
+      if (!raw) {
+        showState('initial'); return;
+      }
+      showState('loading');
+      console.log('search request sent', raw);
+      
+      fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ movie: raw })
+      })
+      .then(response => {
+        console.log('API response received');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success && data.movies && data.movies.length > 0) {
+          renderResults(raw, data.movies);
+        } else {
+          showState('empty');
+        }
+      })
+      .catch(error => {
+        console.log('fetch failure', error);
+        document.getElementById('error-msg').innerText = "Unable to fetch results. Please ensure backend is running.";
+        showState('error');
+      });
+    }
+
+    function showState(state) {
+      ['initial','loading','error','empty'].forEach(s => {
+        document.getElementById('state-'+s).style.display = s === state ? 'block' : 'none';
+      });
+      document.getElementById('results-header').style.display = state === 'results' ? 'block' : 'none';
+      document.getElementById('cards-grid').style.display = state === 'results' ? 'grid' : 'none';
+    }
+
+    function renderResults(query, films) {
+      if (!films || !films.length) { showState('empty'); return; }
+      document.getElementById('results-title').innerHTML = `Films for <em>"${query}"</em>`;
+      const grid = document.getElementById('cards-grid');
+      const colors = ['#1a2a3a','#2a1a1a','#1a2a1a','#1a1a2a','#2a2a1a','#1a2a22'];
+      grid.innerHTML = films.map((f, i) => `
+        <div class="movie-card" style="animation-delay:${i*0.07}s">
+          <div class="card-poster">
+            <div class="card-poster-placeholder" style="background:linear-gradient(160deg,#201f22 0%,${colors[i%colors.length]} 100%);">
+              <div class="poster-icon">🎞</div>
+              <div style="font-size:0.65rem;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;">${f.year}</div>
+            </div>
+            <div class="card-rating-badge">★ ${f.rating}</div>
+            <div class="poster-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">${f.title}</div>
+            <div class="card-year">${f.year}</div>
+            <div class="card-genres">${f.genres.map(g=>`<span class="genre-tag">${g}</span>`).join('')}</div>
+          </div>
+        </div>
+      `).join('');
+      showState('results');
+      document.getElementById('discover').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* ── ENTER KEY ── */
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleSearch();
+    });
+
+    /* ── REVEAL ON SCROLL ── */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    /* ── INIT ── */
+    buildCarousel();
+  </script>
+</body>
+</html>
