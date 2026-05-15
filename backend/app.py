@@ -51,7 +51,7 @@ def recommend():
             return jsonify({'success': False, 'error': 'Invalid input: "movie" field is missing'}), 400
         
         movie_title = data['movie'].strip()
-        print(f"Recommendation request received for: {movie_title}")
+        print("Movie request received")
         
         # Convert search query to lowercase for case-insensitive matching
         match = movies[movies['title'].str.lower() == movie_title.lower()]
@@ -61,7 +61,7 @@ def recommend():
             print(f"Movie not found: {movie_title}")
             return jsonify({'success': False, 'error': 'Movie not found in database'}), 404
             
-        print("Movie found. Generating recommendations...")
+        print("Recommendations generated")
         
         # --- Content-Based Recommendation Logic ---
         
