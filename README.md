@@ -1,40 +1,40 @@
 # CineMatch AI 🎬
 
-CineMatch AI is a modern, premium, AI-powered movie recommendation web application. It features a stunning cinematic user interface built with raw HTML/CSS/JS and a lightweight Machine Learning backend powered by Python, Flask, and Scikit-Learn.
+CineMatch AI is a modern, premium, **ML-Powered Movie Recommendation System**. It features a stunning cinematic user interface built with raw HTML/CSS/JS and a lightweight, statically hosted dataset powered by machine learning algorithms (Scikit-Learn).
 
-This project is built as a beginner-friendly, deployment-ready showcase perfect for engineering student internships. It avoids unnecessary complexity (like databases or user authentication) and focuses squarely on beautiful design, core machine learning principles, and clean API integration.
+This project is built as a beginner-friendly, deployment-ready showcase perfect for engineering student internships. It completely eliminates complex backend hosting and database costs by shifting the machine learning output into a lightning-fast, frontend-only JSON architecture.
 
 ![CineMatch AI Screenshot](https://via.placeholder.com/1200x600/0b0f19/00f0ff?text=CineMatch+AI+Dashboard+Screenshot)
 
 ## ✨ Features
 
 - **Premium UI/UX:** Cinematic dark mode aesthetic with glassmorphism, smooth micro-animations, and dynamic visual states.
-- **Content-Based Filtering:** AI recommendation engine that suggests movies based on shared metadata (genres, keywords, cast, and overview).
-- **Fast & Lightweight:** No complex frameworks—just pure Vanilla JS frontend communicating seamlessly with a Python API.
-- **Deployment Ready:** Configured with a `Procfile` and `requirements.txt` for easy hosting on platforms like Render and Vercel.
+- **Content-Based Filtering:** True AI recommendation engine that suggests movies based on shared metadata (genres, keywords, cast, and overview).
+- **Offline ML Pipeline:** Heavy lifting (CountVectorizer & Cosine Similarity) is done entirely offline in Python.
+- **Ultra-Fast & Lightweight:** Pure Vanilla JS frontend communicating with a static `recommendations.json` file for instantaneous lookups. No API latency.
+- **Serverless Deployment:** Deployable instantly and for free on Vercel or GitHub Pages. No Python backend hosting required!
 
 ## 🛠 Tech Stack
 
-**Frontend:**
+**Frontend (Deployed):**
 - HTML5
 - CSS3 (Custom properties, Flexbox, CSS Grid)
 - Vanilla JavaScript (ES6, Fetch API)
 
-**Backend:**
+**Machine Learning / Data Processing (Offline):**
 - Python 3.x
-- Flask (Web framework)
-- Flask-CORS (Cross-Origin Resource Sharing)
 - Scikit-Learn (Machine Learning library)
 - Pandas & NumPy (Data manipulation)
 
 ## 🧠 Machine Learning Workflow
 
-The recommendation engine uses a **Content-Based Filtering** approach. Here is how it works:
+CineMatch AI remains an authentic **ML-Powered Movie Recommendation System**. We simply shifted the compute cycle from "on-demand" to "pre-computed". Here is how it works:
 
-1. **Data Preprocessing:** The backend script (`generate_similarity.py`) loads movie metadata (`movie_list.pkl`), cleans it, and combines relevant text columns (like genres, keywords, cast, and overview) into a single `tags` string for each movie.
-2. **Vectorization (`CountVectorizer`):** The text tags are converted into numerical vectors. Scikit-Learn's `CountVectorizer` counts the frequency of each word, transforming the text data into a mathematical matrix that the computer can understand.
-3. **Cosine Similarity:** To determine how similar two movies are, the engine calculates the **Cosine Similarity** between their vectors. This measures the angle between the vectors—the smaller the angle, the higher the similarity score.
-4. **Prediction:** When a user searches for a movie, the Flask API finds its index, looks up its similarity scores against all other movies, and returns the top 6 matches in descending order.
+1. **Data Preprocessing:** The offline Python scripts (`backend/generate_similarity.py`) load movie metadata, clean it, and combine relevant text columns (like genres, keywords, cast, and overview) into a single `tags` string for each movie.
+2. **Vectorization (`CountVectorizer`):** The text tags are converted into numerical vectors. Scikit-Learn's `CountVectorizer` counts the frequency of each word, transforming the text data into a mathematical matrix.
+3. **Cosine Similarity:** To determine how similar two movies are, the engine calculates the **Cosine Similarity** between their vectors.
+4. **JSON Export:** The similarity scores were evaluated, and the top matches for each movie were exported into a lightweight `frontend/recommendations.json` file.
+5. **Instant Frontend Delivery:** When a user searches for a movie in the web browser, the JavaScript instantly looks up the pre-calculated ML recommendations locally—resulting in zero latency and zero server costs.
 
 ## 🚀 Setup Instructions (Local)
 
@@ -44,42 +44,26 @@ git clone https://github.com/samarthtalwar9/Cinematch.git
 cd Cinematch
 ```
 
-### 2. Run the Backend
-Ensure you have Python installed.
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
-The Flask server will start running on `http://localhost:5000`.
-
-### 3. Run the Frontend
-Simply open `frontend/index.html` in any modern web browser. No `npm install` or local server is required for the frontend!
+### 2. Run the Frontend
+Because the ML logic is already pre-generated in `recommendations.json`, you do **not** need to run any Python server!
+Simply open `frontend/index.html` in any modern web browser or use a tool like VS Code Live Server.
 
 ## ☁️ Deployment Instructions
 
-### Backend (Render)
-1. Push your code to a GitHub repository.
-2. Create a new "Web Service" on [Render](https://render.com/).
-3. Connect your repository.
-4. Set the Build Command to: `pip install -r backend/requirements.txt && python backend/generate_similarity.py`
-   *(Note: `similarity.pkl` is generated dynamically during build because it exceeds GitHub's 100MB file limit).*
-5. Set the Start Command to: `gunicorn backend.app:app`
-6. Deploy! Render will provide you with a live URL (e.g., `https://cinematch-backend.onrender.com`).
+The project is now a static site and can be deployed in 2 minutes:
 
-### Frontend (Vercel)
-1. Open `frontend/index.html` in your code editor.
-2. Update the `API_URL` variable at the top of the JavaScript block:
-   ```javascript
-   const API_URL = "https://your-render-backend-url.com/recommend";
-   ```
-3. Push the changes to GitHub.
-4. Create a new project on [Vercel](https://vercel.com/) and connect your repository.
-5. Set the "Root Directory" to `frontend`.
-6. Deploy! 
+### Vercel / GitHub Pages
+1. Push your code to a GitHub repository.
+2. Create a new project on [Vercel](https://vercel.com/) or enable [GitHub Pages](https://pages.github.com/).
+3. Connect your repository.
+4. Set the "Root Directory" to `frontend` (for Vercel).
+5. Deploy! Your app will instantly serve the HTML and JSON files globally.
+
+## 🔬 Running the Offline ML Engine (Optional)
+
+If you wish to update the movie dataset or tweak the ML algorithm, the offline Python backend is still available in the repository.
 
 ## 🔮 Future Improvements
 
-- Replace the `.pkl` file with a live cloud database (e.g., Firebase or PostgreSQL) for real-time dataset updates.
-- Expand the dataset to include accurate release years, IMDb ratings, and high-quality movie poster URLs.
+- Expand the dataset to include accurate release years, IMDb ratings, and high-quality movie poster URLs directly in the JSON.
 - Implement Collaborative Filtering (user-to-user recommendations) to supplement the current Content-Based model.
