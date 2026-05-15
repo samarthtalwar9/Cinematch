@@ -36,6 +36,10 @@ except Exception as e:
     print(f"Error loading models: {e}")
 
 
+@app.route('/')
+def home():
+    return "CineMatch API Running"
+
 @app.route('/recommend', methods=['POST'])
 def recommend():
     try:
