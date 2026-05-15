@@ -798,10 +798,9 @@
       handleSearch();
     }
 
-    // CONFIGURATION: Set this to your deployed backend URL
-    const API_URL = "http://127.0.0.1:5000/recommend";
+    let recommendationsData = null;
 
-    function handleSearch() {
+    async function handleSearch() {
       const movieName = document.getElementById('searchInput').value.trim();
       if (!movieName) {
         showState('initial');
@@ -809,35 +808,29 @@
       }
       
       showState('loading');
-      console.log('search request sent', movieName);
       
-      fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ movie: movieName })
-      })
-      .then(response => {
-        console.log('API response received');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+      try {
+        if (!recommendationsData) {
+          const response = await fetch('recommendations.json');
+          if (!response.ok) throw new Error('Local JSON not found');
+          recommendationsData = await response.json();
+          console.log("Recommendations loaded");
         }
-        return response.json();
-      })
-      .then(data => {
-        if (data.success && data.movies && data.movies.length > 0) {
-          console.log('rendered movie count', data.movies.length);
-          renderResults(movieName, data.movies);
+        
+        const key = movieName.toLowerCase();
+        if (recommendationsData[key] && recommendationsData[key].length > 0) {
+          console.log("Movie found");
+          console.log("Rendered recommendations");
+          renderResults(movieName, recommendationsData[key]);
         } else {
+          console.log("Movie not found");
           showState('empty');
         }
-      })
-      .catch(error => {
-        console.log('fetch failed', error);
-        document.getElementById('error-msg').innerText = "Unable to fetch results. Please ensure backend is running.";
+      } catch (error) {
+        console.error("Error loading recommendations:", error);
+        document.getElementById('error-msg').innerText = "Unable to load recommendation data.";
         showState('error');
-      });
+      }
     }
 
     function showState(state) {
