@@ -802,19 +802,21 @@
     const API_URL = "http://127.0.0.1:5000/recommend";
 
     function handleSearch() {
-      const raw = document.getElementById('searchInput').value.trim();
-      if (!raw) {
-        showState('initial'); return;
+      const movieName = document.getElementById('searchInput').value.trim();
+      if (!movieName) {
+        showState('initial');
+        return;
       }
+      
       showState('loading');
-      console.log('search request sent', raw);
+      console.log('search request sent', movieName);
       
       fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ movie: raw })
+        body: JSON.stringify({ movie: movieName })
       })
       .then(response => {
         console.log('API response received');
@@ -825,14 +827,14 @@
       })
       .then(data => {
         if (data.success && data.movies && data.movies.length > 0) {
-          console.log('movie data received', data.movies);
-          renderResults(raw, data.movies);
+          console.log('rendered movie count', data.movies.length);
+          renderResults(movieName, data.movies);
         } else {
           showState('empty');
         }
       })
       .catch(error => {
-        console.log('fetch failure', error);
+        console.log('fetch failed', error);
         document.getElementById('error-msg').innerText = "Unable to fetch results. Please ensure backend is running.";
         showState('error');
       });
