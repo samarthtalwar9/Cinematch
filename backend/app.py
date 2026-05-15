@@ -21,8 +21,14 @@ try:
     movies = pd.read_pickle(os.path.join(base_dir, 'movie_list.pkl'))
     movies = movies.reset_index(drop=True)
     
+    sim_path = os.path.join(base_dir, 'similarity.pkl')
+    if not os.path.exists(sim_path):
+        print("similarity.pkl not found. Generating it now...")
+        import generate_similarity
+        generate_similarity.main()
+
     # Load cosine similarity matrix
-    with open(os.path.join(base_dir, 'similarity.pkl'), 'rb') as f:
+    with open(sim_path, 'rb') as f:
         similarity = pickle.load(f)
         
     print("Models loaded successfully.")
